@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { defineProps, defineEmits } from "vue";
+import IconSearch from "@/components/icons/IconSearch.vue";
+
 defineProps<{
   show: boolean;
   onClose?: () => void;
@@ -14,7 +17,9 @@ const emit = defineEmits<{
     <div class="flex items-center gap-4">
       <img src="/back.svg" alt="Atrás" class="h-6" @click="emit('close')" />
       <div class="relative w-full">
-        <img src="/search.svg" alt="Buscar" class="absolute top-3 left-4 h-6" />
+        <div class="absolute top-3 left-3">
+          <IconSearch fill="#2C2C45" width="24px" height="24px" />
+        </div>
         <input
           type="text"
           class="w-full h-12 py-4 pl-12 leading-4 rounded-xl bg-neutrals-10 outline-none"

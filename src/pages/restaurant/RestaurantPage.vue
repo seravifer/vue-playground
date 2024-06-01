@@ -6,7 +6,7 @@ import IconChevron from "@/components/icons/IconChevron.vue";
 import SearchModal from "./components/SearchModal.vue";
 import { RouterLink, useRoute } from "vue-router";
 import { useGetRestaurants } from "@/hooks/useGetRestaurants";
-import { useGetCatalog } from "./useGetCatalog";
+import { useGetCatalog } from "@/hooks/useGetCatalog";
 
 const route = useRoute();
 
@@ -67,7 +67,7 @@ function removeFromCart(productName: string) {
       </div>
     </div>
 
-    <div class="grid grid-cols-2 lg:grid-cols-3 gap-5 px-7 pb-28" v-if="catalog && catalog?.length > 0">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-5 px-7 pb-28" v-if="catalog && catalog.length > 0">
       <div class="flex flex-col" v-for="product of catalog[filteredCategory].products" :key="product.name">
         <div class="grow flex items-center">
           <img :src="product.image" :alt="product.name + ' imagen'" class="object-cover rounded-[9px] bg-white" />
