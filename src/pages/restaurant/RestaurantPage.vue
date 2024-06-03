@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, reactive } from "vue";
 import RestaurantCard from "@/components/RestaurantCard.vue";
 import IconSearch from "@/components/icons/IconSearch.vue";
 import IconChevron from "@/components/icons/IconChevron.vue";
@@ -19,22 +19,25 @@ const restaurant = computed(() => restaurants.value?.find((restaurant) => restau
 
 const filteredCategory = ref<number>(0);
 const showSearchModal = ref<boolean>(false);
-const shoppingCart = ref<{ [key: string]: number }>({});
+
+const shoppingCart = reactive<{
+  [key: string]: number;
+}>({});
 
 const total = computed(() => {
-  return Object.keys(shoppingCart.value).reduce((acc, key) => {
+  return Object.keys(shoppingCart).reduce((acc, key) => {
     const product = catalog.value?.flatMap((category) => category.products)?.find((product) => product.name === key);
 
-    return acc + (product?.price || 0) * shoppingCart.value[key];
+    return acc + (product?.price || 0) * shoppingCart[key];
   }, 0);
 });
 
 function addToCart(productName: string) {
-  shoppingCart.value[productName] = (shoppingCart.value[productName] || 0) + 1;
+  shoppingCart[productName] = (shoppingCart[productName] || 0) + 1;
 }
 
 function removeFromCart(productName: string) {
-  shoppingCart.value[productName] = (shoppingCart.value[productName] || 0) - 1;
+  shoppingCart[productName] = (shoppingCart[productName] || 0) - 1;
 }
 </script>
 
