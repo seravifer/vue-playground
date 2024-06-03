@@ -13,5 +13,10 @@ export const Router = createRouter({
       name: "restaurant",
       component: () => import("./pages/restaurant/RestaurantPage.vue"),
     },
+    {
+      path: "/payment",
+      name: "payment",
+      component: () => import("./pages/payment/PaymentPage.vue"),
+    },
   ],
 });

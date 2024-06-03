@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, reactive } from "vue";
+import { ref, computed } from "vue";
 import RestaurantCard from "@/components/RestaurantCard.vue";
 import IconSearch from "@/components/icons/IconSearch.vue";
 import IconChevron from "@/components/icons/IconChevron.vue";
 import SearchModal from "./components/SearchModal.vue";
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useGetRestaurants } from "@/hooks/useGetRestaurants";
 import { useGetCatalog } from "@/hooks/useGetCatalog";
+import { useShoppingCart } from "@/hooks/useShoppingCart";
 
 const route = useRoute();
+const router = useRouter();
 
 const restaurantId = route.params.id as string;
 
@@ -20,24 +22,12 @@ const restaurant = computed(() => restaurants.value?.find((restaurant) => restau
 const filteredCategory = ref<number>(0);
 const showSearchModal = ref<boolean>(false);
 
-const shoppingCart = reactive<{
-  [key: string]: number;
-}>({});
+const { total, shoppingCart, addToCart, removeFromCart, resetCart } = useShoppingCart(restaurantId);
 
-const total = computed(() => {
-  return Object.keys(shoppingCart).reduce((acc, key) => {
-    const product = catalog.value?.flatMap((category) => category.products)?.find((product) => product.name === key);
-
-    return acc + (product?.price || 0) * shoppingCart[key];
-  }, 0);
-});
-
-function addToCart(productName: string) {
-  shoppingCart[productName] = (shoppingCart[productName] || 0) + 1;
-}
-
-function removeFromCart(productName: string) {
-  shoppingCart[productName] = (shoppingCart[productName] || 0) - 1;
+function onPayment() {
+  router.push("/payment").then(() => {
+    resetCart();
+  });
 }
 </script>
 
@@ -81,9 +71,9 @@ function removeFromCart(productName: string) {
           <div class="flex items-center">
             <template v-if="shoppingCart[product.name]">
               <img class="h-5" src="/minus.svg" @click="removeFromCart(product.name)" />
-              <div class="text-center w-7">{{ shoppingCart[product.name] }}</div>
+              <div class="text-center w-7">{{ shoppingCart[product.name].quantity }}</div>
             </template>
-            <img class="h-5" src="/plus.svg" @click="addToCart(product.name)" />
+            <img class="h-5" src="/plus.svg" @click="addToCart(product)" />
           </div>
         </div>
       </div>
@@ -92,7 +82,10 @@ function removeFromCart(productName: string) {
 
   <SearchModal :show="showSearchModal" @close="showSearchModal = false" />
 
-  <button class="h-14 rounded-lg bg-primary text-white font-medium text-lg fixed bottom-7 left-5 right-5">
+  <button
+    class="h-14 rounded-lg bg-primary text-white font-medium text-lg fixed bottom-7 left-5 right-5"
+    @click="onPayment()"
+  >
     TOTAL ({{ $n(total, "currency") }})
   </button>
 </template>

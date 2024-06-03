@@ -1,10 +1,11 @@
 import "./assets/main.css";
 
 import { createApp } from "vue";
-import App from "./App.vue";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 import { Router } from "./router";
 import { i18n } from "./i18n";
+
+import App from "./App.vue";
 
 const app = createApp(App);
 
