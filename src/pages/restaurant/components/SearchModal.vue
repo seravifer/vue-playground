@@ -1,18 +1,25 @@
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
+import { defineProps, defineEmits, computed, defineModel } from "vue";
 import IconSearch from "@/components/icons/IconSearch.vue";
 import { Product } from "@/services/catalog/catalog.types";
 
-defineProps<{
+const props = defineProps<{
   show: boolean;
   items: Product[];
   onClose?: () => void;
 }>();
-
 const emit = defineEmits<{
   (e: "close"): void;
   (e: "itemSelected", product: Product): void;
 }>();
+
+const inputSearch = defineModel<string>();
+
+const filteredItems = computed(() => {
+  const searchText = inputSearch.value;
+  if (!searchText) return props.items;
+  return props.items.filter((item) => item.name.toLowerCase().includes(searchText.toLowerCase()));
+});
 </script>
 
 <template>
@@ -27,10 +34,11 @@ const emit = defineEmits<{
           type="text"
           class="w-full h-12 py-4 pl-12 leading-4 rounded-xl bg-neutrals-10 outline-none"
           placeholder="Buscar productos"
+          v-model="inputSearch"
         />
       </div>
     </div>
-    <div class="flex items-center gap-4 py-4" v-for="product of items" :key="product.name">
+    <div class="flex items-center gap-4 py-4" v-for="product of filteredItems" :key="product.name">
       <div class="grow flex items-center max-w-16 h-11">
         <img :src="product.image" :alt="product.name + ' imagen'" class="object-cover rounded-[9px] bg-white" />
       </div>
