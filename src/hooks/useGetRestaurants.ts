@@ -16,7 +16,7 @@ export function useGetRestaurants() {
 
   const { isSuccess, isError, isLoading, data } = useQuery({
     queryKey: [RESTAURANTS_KEY],
-    staleTime: 60_000,
+    staleTime: 1_000 * 60 * 5, // 5 minutes
     queryFn: getRestaurants,
   });
 
