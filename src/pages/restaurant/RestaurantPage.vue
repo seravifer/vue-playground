@@ -8,6 +8,7 @@ import { RouterLink, useRoute, useRouter } from "vue-router";
 import { useGetRestaurants } from "@/hooks/useGetRestaurants";
 import { useGetCatalog } from "@/hooks/useGetCatalog";
 import { useShoppingCart } from "@/hooks/useShoppingCart";
+import { Product } from "@/services/catalog/catalog.types";
 
 const route = useRoute();
 const router = useRouter();
@@ -23,6 +24,12 @@ const filteredCategory = ref<number>(0);
 const showSearchModal = ref<boolean>(false);
 
 const { total, shoppingCart, addToCart, removeFromCart, resetCart } = useShoppingCart(restaurantId);
+
+const allProducts = computed<Product[]>(() => (catalog.value ?? []).flatMap((category) => category.products));
+
+function onItemSelected(product: Product) {
+  addToCart(product);
+}
 
 function onPayment() {
   router.push("/payment").then(() => {
@@ -61,7 +68,12 @@ function onPayment() {
     </div>
 
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-5 px-7 pb-28" v-if="catalog && catalog.length > 0">
-      <div class="flex flex-col" v-for="product of catalog[filteredCategory].products" :key="product.name">
+      <div
+        class="flex flex-col"
+        v-for="product of catalog[filteredCategory].products"
+        :key="product.name"
+        :id="product.name"
+      >
         <div class="grow flex items-center">
           <img :src="product.image" :alt="product.name + ' imagen'" class="object-cover rounded-[9px] bg-white" />
         </div>
@@ -80,7 +92,12 @@ function onPayment() {
     </div>
   </main>
 
-  <SearchModal :show="showSearchModal" @close="showSearchModal = false" />
+  <SearchModal
+    :show="showSearchModal"
+    :items="allProducts"
+    @itemSelected="(p) => onItemSelected(p)"
+    @close="showSearchModal = false"
+  />
 
   <button
     class="h-14 rounded-lg bg-primary text-white font-medium text-lg fixed bottom-7 left-5 right-5"
